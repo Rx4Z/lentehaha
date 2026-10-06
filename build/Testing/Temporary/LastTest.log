@@ -1,0 +1,155 @@
+Start testing: Oct 06 23:01 China Standard Time
+----------------------------------------------------------
+1/3 Testing: copy_verify
+1/3 Test: copy_verify
+Command: "C:/Users/epong/Desktop/FluxTransfer/build/Release/FluxTransferTests.exe"
+Directory: C:/Users/epong/Desktop/FluxTransfer/build
+"copy_verify" start time: Oct 06 23:01 China Standard Time
+Output:
+----------------------------------------------------------
+  ok:   copyDirectory returns Success
+  ok:   root file copied
+  ok:   nested structure preserved
+  ok:   reported percent never exceeds 100 (no double counting)
+  ok:   reported bytes are monotonic
+  ok:   final percent reaches 100
+  ok:   totalBytes matches source bytes (3150865 vs 3150865)
+  ok:   multi-chunk file verifies
+  ok:   single-buffer file verifies
+  ok:   empty file verifies
+  ok:   missing source fails verification
+  ok:   same-size single-byte corruption is detected
+  ok:   size mismatch is detected
+  ok:   missing destination fails verification
+  ok:   identical trees verify
+  ok:   missing nested file is detected
+  ok:   extra/missing file count mismatch is detected
+  ok:   test fixture really is hidden (fixture sanity)
+  ok:   hidden file is copied to destination
+  ok:   hidden file no longer breaks verification
+  ok:   size traversal also counts hidden files (858 vs 858)
+  ok:   missing source directory reports ErrorSourceNotFound
+=== FileCopyEngine copy/verify tests ===
+-- copyDirectory --
+-- size accounting --
+-- verifyFile --
+-- verifyDirectory --
+-- hidden/system file regression --
+-- error paths --
+=== 22/22 checks passed ===
+RESULT: PASS
+<end of output>
+Test time =   0.10 sec
+----------------------------------------------------------
+Test Passed.
+"copy_verify" end time: Oct 06 23:01 China Standard Time
+"copy_verify" time elapsed: 00:00:00
+----------------------------------------------------------
+
+2/3 Testing: source_checklist
+2/3 Test: source_checklist
+Command: "C:/Users/epong/Desktop/FluxTransfer/build/Release/FluxTransferUiTests.exe"
+Directory: C:/Users/epong/Desktop/FluxTransfer/build
+"source_checklist" start time: Oct 06 23:01 China Standard Time
+Output:
+----------------------------------------------------------
+=== SourceChecklist tests ===
+  ok:   tree is exposed
+  ok:   Home group is first
+  ok:   Home has 6 known folders
+  ok:   Home is checked by default
+  ok:   all 6 Home folders checked (got 6)
+  ok:   checkedSources reports 6 (got 6)
+  ok:   Home becomes PartiallyChecked when one child is cleared
+  ok:   checkedSources drops to 5 (got 5)
+  [diag] system drive excluded: C:, non-system drives: 1
+  ok:   drive row is labelled
+  ok:   drive row itself is NOT checkable (expand-only)
+  ok:   drive row has a placeholder child so an expander is drawn (got 1)
+  [diag] visualItemRect=20,98 618x14 -> clicking branch at x=10
+  [diag] after branch click: expanded=1 children=3
+  ok:   clicking the expander indicator expands the drive row
+  ok:   branch click lazy-loads every top-level folder (3 vs 3)
+  ok:   expanding loads every top-level folder (3 vs 3)
+  ok:   placeholder is replaced by real folders
+  ok:   every drive folder is checkable
+  ok:   uncopyable system folders are filtered out
+  ok:   checking a drive folder works (5 -> 6)
+  ok:   a second drive folder also checks
+  ok:   Select all and Clear buttons are findable
+  ok:   Clear empties every checkbox (got 0)
+  ok:   Clear leaves Home unchecked
+  ok:   Clear empties Home's folders (got 0)
+  ok:   Clear empties drive folders (got 0)
+  ok:   summary reads Nothing selected after Clear
+  ok:   Select all ticks all Home folders (got 6/6)
+  ok:   Select all shows Home checked (got state 2)
+  ok:   Select all ticks every drive folder (got 3/3)
+  ok:   summary counts Home + drive folders (got 9, want 9)
+=== 29/29 checks passed ===
+RESULT: PASS
+<end of output>
+Test time =   0.04 sec
+----------------------------------------------------------
+Test Passed.
+"source_checklist" end time: Oct 06 23:01 China Standard Time
+"source_checklist" time elapsed: 00:00:00
+----------------------------------------------------------
+
+3/3 Testing: visual_alignment
+3/3 Test: visual_alignment
+Command: "C:/Users/epong/Desktop/FluxTransfer/build/Release/FluxTransferVisualTests.exe"
+Directory: C:/Users/epong/Desktop/FluxTransfer/build
+"visual_alignment" start time: Oct 06 23:01 China Standard Time
+Output:
+----------------------------------------------------------
+=== Visual alignment tests ===
+-- transfer table: header label vs cell text --
+  ok:   transfer table is present
+  ok:   table header labels are left aligned
+  ok:   table header labels are not centred
+  ok:   Name: header and cell text rendered
+  ok:   Name: header starts on the cell's column (5px vs 5px)
+  ok:   Status: header and cell text rendered
+  ok:   Status: header starts on the cell's column (5px vs 5px)
+  ok:   Progress: header and cell text rendered
+  ok:   Progress: header starts on the cell's column (5px vs 5px)
+  ok:   Size: header and cell text rendered
+  ok:   Size: header starts on the cell's column (5px vs 5px)
+  ok:   Speed: header and cell text rendered
+  ok:   Speed: header starts on the cell's column (5px vs 5px)
+  ok:   ETA: header and cell text rendered
+  ok:   ETA: header starts on the cell's column (5px vs 5px)
+-- mode selector: Copy vs Move indicator --
+  ok:   Copy starts checked, Move starts unchecked
+  ok:   both radios render an indicator
+  ok:   checked and unchecked indicators are the same size (17x17 vs 17x17)
+  ok:   indicator box is square, so the rounded corners read as a circle
+  ok:   checked indicator is filled (224 primary pixels)
+  ok:   unchecked indicator has no primary fill
+-- source tree: text column and indicator --
+  ok:   source tree is present
+  ok:   Home group exists
+  ok:   a non-checkable drive group exists
+  ok:   level-0 rows rendered their text
+  ok:   checkbox and checkbox-less rows share one text column (55px vs 55px)
+  ok:   level-1 rows share one text column (75px vs 75px)
+  ok:   rows have one uniform height
+  ok:   tree header labels are left aligned
+  ok:   unchecked indicator blends into the normal row (#24283b)
+  ok:   unchecked indicator blends into the selected row (#33467c)
+  ok:   selected row highlight still spans the whole row
+-- verify checkbox: checked vs unchecked --
+  ok:   checked verify checkbox shows its state (312 primary pixels)
+  ok:   unchecked verify checkbox shows no fill
+
+34 checks, 0 failures
+<end of output>
+Test time =   0.08 sec
+----------------------------------------------------------
+Test Passed.
+"visual_alignment" end time: Oct 06 23:01 China Standard Time
+"visual_alignment" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Oct 06 23:01 China Standard Time

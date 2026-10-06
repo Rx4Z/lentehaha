@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\epong\Desktop\FluxTransfer\build\CMakeFiles\a2eca94de47d7eadbf6e5852317ee618\deploy.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\epong\Desktop\FluxTransfer\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\epong\Desktop\FluxTransfer\build\CMakeFiles\deploy" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{CE99775B-4498-3520-86B7-B7D3FCB82DA8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

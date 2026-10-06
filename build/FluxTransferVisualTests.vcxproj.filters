@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\epong\Desktop\FluxTransfer\build\FluxTransferVisualTests_autogen\mocs_compilation_Debug.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\epong\Desktop\FluxTransfer\tests\test_visual_alignment.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\epong\Desktop\FluxTransfer\src\core\DriveManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\epong\Desktop\FluxTransfer\src\core\SizeScanner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\epong\Desktop\FluxTransfer\src\ui\SourceChecklist.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\epong\Desktop\FluxTransfer\src\ui\TransferQueueWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\epong\Desktop\FluxTransfer\src\common\Theme.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\epong\Desktop\FluxTransfer\build\FluxTransferVisualTests_autogen\mocs_compilation_Release.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\epong\Desktop\FluxTransfer\build\FluxTransferVisualTests_autogen\mocs_compilation_MinSizeRel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\epong\Desktop\FluxTransfer\build\FluxTransferVisualTests_autogen\mocs_compilation_RelWithDebInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\epong\Desktop\FluxTransfer\build\CMakeFiles\a0f36ae94aeba83d4f0b15eed7a0486a\timestamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\epong\Desktop\FluxTransfer\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\epong\Desktop\FluxTransfer\build\FluxTransferVisualTests_autogen\timestamp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{CE99775B-4498-3520-86B7-B7D3FCB82DA8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{D3DEBFD3-0B58-3411-8A72-30F065ADFB51}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

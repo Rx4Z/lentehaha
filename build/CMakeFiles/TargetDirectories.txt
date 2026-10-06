@@ -1,0 +1,8 @@
+C:/Users/epong/Desktop/FluxTransfer/build/CMakeFiles/FluxTransfer.dir
+C:/Users/epong/Desktop/FluxTransfer/build/CMakeFiles/deploy.dir
+C:/Users/epong/Desktop/FluxTransfer/build/CMakeFiles/FluxTransferTests.dir
+C:/Users/epong/Desktop/FluxTransfer/build/CMakeFiles/FluxTransferUiTests.dir
+C:/Users/epong/Desktop/FluxTransfer/build/CMakeFiles/FluxTransferVisualTests.dir
+C:/Users/epong/Desktop/FluxTransfer/build/CMakeFiles/RUN_TESTS.dir
+C:/Users/epong/Desktop/FluxTransfer/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/epong/Desktop/FluxTransfer/build/CMakeFiles/ZERO_CHECK.dir
