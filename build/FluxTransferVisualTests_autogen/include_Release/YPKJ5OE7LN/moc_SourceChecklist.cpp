@@ -46,7 +46,6 @@ static constexpr auto qt_meta_stringdata_CLASSSourceChecklistENDCLASS = QtMocHel
     "QTreeWidgetItem*",
     "item",
     "column",
-    "onItemExpanded",
     "onSizeReady",
     "path",
     "bytes",
@@ -55,7 +54,7 @@ static constexpr auto qt_meta_stringdata_CLASSSourceChecklistENDCLASS = QtMocHel
 );
 #else  // !QT_MOC_HAS_STRING_DATA
 struct qt_meta_stringdata_CLASSSourceChecklistENDCLASS_t {
-    uint offsetsAndSizes[26];
+    uint offsetsAndSizes[24];
     char stringdata0[16];
     char stringdata1[15];
     char stringdata2[1];
@@ -63,12 +62,11 @@ struct qt_meta_stringdata_CLASSSourceChecklistENDCLASS_t {
     char stringdata4[17];
     char stringdata5[5];
     char stringdata6[7];
-    char stringdata7[15];
-    char stringdata8[12];
-    char stringdata9[5];
-    char stringdata10[6];
-    char stringdata11[12];
-    char stringdata12[11];
+    char stringdata7[12];
+    char stringdata8[5];
+    char stringdata9[6];
+    char stringdata10[12];
+    char stringdata11[11];
 };
 #define QT_MOC_LITERAL(ofs, len) \
     uint(sizeof(qt_meta_stringdata_CLASSSourceChecklistENDCLASS_t::offsetsAndSizes) + ofs), len 
@@ -81,12 +79,11 @@ Q_CONSTINIT static const qt_meta_stringdata_CLASSSourceChecklistENDCLASS_t qt_me
         QT_MOC_LITERAL(46, 16),  // "QTreeWidgetItem*"
         QT_MOC_LITERAL(63, 4),  // "item"
         QT_MOC_LITERAL(68, 6),  // "column"
-        QT_MOC_LITERAL(75, 14),  // "onItemExpanded"
-        QT_MOC_LITERAL(90, 11),  // "onSizeReady"
-        QT_MOC_LITERAL(102, 4),  // "path"
-        QT_MOC_LITERAL(107, 5),  // "bytes"
-        QT_MOC_LITERAL(113, 11),  // "onSelectAll"
-        QT_MOC_LITERAL(125, 10)   // "onClearAll"
+        QT_MOC_LITERAL(75, 11),  // "onSizeReady"
+        QT_MOC_LITERAL(87, 4),  // "path"
+        QT_MOC_LITERAL(92, 5),  // "bytes"
+        QT_MOC_LITERAL(98, 11),  // "onSelectAll"
+        QT_MOC_LITERAL(110, 10)   // "onClearAll"
     },
     "SourceChecklist",
     "sourcesChanged",
@@ -95,7 +92,6 @@ Q_CONSTINIT static const qt_meta_stringdata_CLASSSourceChecklistENDCLASS_t qt_me
     "QTreeWidgetItem*",
     "item",
     "column",
-    "onItemExpanded",
     "onSizeReady",
     "path",
     "bytes",
@@ -112,7 +108,7 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSSourceChecklistENDCLASS[] = {
       11,       // revision
        0,       // classname
        0,    0, // classinfo
-       6,   14, // methods
+       5,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -120,22 +116,20 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSSourceChecklistENDCLASS[] = {
        1,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    0,   50,    2, 0x06,    1 /* Public */,
+       1,    0,   44,    2, 0x06,    1 /* Public */,
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       3,    2,   51,    2, 0x08,    2 /* Private */,
-       7,    1,   56,    2, 0x08,    5 /* Private */,
-       8,    2,   59,    2, 0x08,    7 /* Private */,
-      11,    0,   64,    2, 0x08,   10 /* Private */,
-      12,    0,   65,    2, 0x08,   11 /* Private */,
+       3,    2,   45,    2, 0x08,    2 /* Private */,
+       7,    2,   50,    2, 0x08,    5 /* Private */,
+      10,    0,   55,    2, 0x08,    8 /* Private */,
+      11,    0,   56,    2, 0x08,    9 /* Private */,
 
  // signals: parameters
     QMetaType::Void,
 
  // slots: parameters
     QMetaType::Void, 0x80000000 | 4, QMetaType::Int,    5,    6,
-    QMetaType::Void, 0x80000000 | 4,    5,
-    QMetaType::Void, QMetaType::QString, QMetaType::LongLong,    9,   10,
+    QMetaType::Void, QMetaType::QString, QMetaType::LongLong,    8,    9,
     QMetaType::Void,
     QMetaType::Void,
 
@@ -157,9 +151,6 @@ Q_CONSTINIT const QMetaObject SourceChecklist::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<QTreeWidgetItem *, std::false_type>,
         QtPrivate::TypeAndForceComplete<int, std::false_type>,
-        // method 'onItemExpanded'
-        QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        QtPrivate::TypeAndForceComplete<QTreeWidgetItem *, std::false_type>,
         // method 'onSizeReady'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<const QString &, std::false_type>,
@@ -180,10 +171,9 @@ void SourceChecklist::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int 
         switch (_id) {
         case 0: _t->sourcesChanged(); break;
         case 1: _t->onItemChanged((*reinterpret_cast< std::add_pointer_t<QTreeWidgetItem*>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<int>>(_a[2]))); break;
-        case 2: _t->onItemExpanded((*reinterpret_cast< std::add_pointer_t<QTreeWidgetItem*>>(_a[1]))); break;
-        case 3: _t->onSizeReady((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<qint64>>(_a[2]))); break;
-        case 4: _t->onSelectAll(); break;
-        case 5: _t->onClearAll(); break;
+        case 2: _t->onSizeReady((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<qint64>>(_a[2]))); break;
+        case 3: _t->onSelectAll(); break;
+        case 4: _t->onClearAll(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -217,13 +207,13 @@ int SourceChecklist::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 6)
+        if (_id < 5)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 6;
+        _id -= 5;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 6)
+        if (_id < 5)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 6;
+        _id -= 5;
     }
     return _id;
 }

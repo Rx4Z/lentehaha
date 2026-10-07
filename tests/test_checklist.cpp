@@ -20,11 +20,11 @@ static void check(bool condition, const QString& what)
 
 static QTreeWidgetItem* findDriveGroup(QTreeWidget* tree)
 {
-    // Drive rows are the only top-level entries that are NOT checkable
-    // (they are expand-only containers, not sources themselves).
+    // Home is always the first top-level row; every following top-level row
+    // is a drive group (drives are now checkable whole-drive sources).
     for (int i = 0; i < tree->topLevelItemCount(); ++i) {
         QTreeWidgetItem* item = tree->topLevelItem(i);
-        if (!item->flags().testFlag(Qt::ItemIsUserCheckable))
+        if (item->text(0) != QStringLiteral("Home"))
             return item;
     }
     return nullptr;
@@ -67,105 +67,115 @@ int main(int argc, char** argv)
     check(checklist.checkedCount() == 5,
           QString("checkedSources drops to 5 (got %1)").arg(checklist.checkedCount()));
 
-    // --- drive group is expandable ---
+    // --- drive group: checkable whole-drive source ---
     QTreeWidgetItem* drive = findDriveGroup(tree);
     out << "  [diag] system drive excluded: " << DriveManager::systemDriveLetter()
         << ", non-system drives: " << DriveManager::enumerateDrives(false).size() << "\n";
     out.flush();
 
     if (!drive) {
-        check(false, "a non-system drive group exists to expand");
+        check(false, "a non-system drive group exists");
     } else {
         check(drive->text(0) != QStringLiteral("Home") && !drive->text(0).isEmpty(),
               "drive row is labelled");
-        check(!drive->flags().testFlag(Qt::ItemIsUserCheckable),
-              "drive row itself is NOT checkable (expand-only)");
+        check(drive->flags().testFlag(Qt::ItemIsUserCheckable),
+              "drive row IS checkable (whole-drive source)");
 
-        // The expander only renders if the item has a child.
+        // The row must carry real check-state data: Qt paints the checkbox
+        // only when the CheckStateRole holds a value — the checkable flag
+        // alone renders nothing (this is why the live app showed no box).
+        check(drive->data(0, Qt::CheckStateRole).isValid(),
+              "drive row has check-state data so its checkbox renders");
+
+        // The title must name the drive like Windows does and include the
+        // actual drive letter parsed from the root path — not the media
+        // kind ("Fixed", "Removable", …).
+        const QString driveLetter = drive->data(0, Qt::UserRole).toString().left(2);
+        check(driveLetter.size() == 2 && drive->text(0).contains(driveLetter),
+              QString("drive title '%1' contains the drive letter '%2'")
+                  .arg(drive->text(0), driveLetter));
+
+        QTreeWidgetItem* driveChild = drive->child(0);
+
+        // The name attached to the transfer entry is the volume label (or
+        // the bare letter for unlabeled volumes), never the media kind.
+        const QString entryName = driveChild != nullptr
+            ? driveChild->data(0, Qt::UserRole + 4).toString() : QString();
+        check(!entryName.isEmpty() &&
+                  entryName != QStringLiteral("Fixed") &&
+                  entryName != QStringLiteral("Removable") &&
+                  entryName != QStringLiteral("Network") &&
+                  entryName != QStringLiteral("Optical"),
+              QString("drive source name '%1' is the label/letter, not the media kind")
+                  .arg(entryName));
+
+        // The drive's child row is a REAL checkable whole-drive source (like
+        // a Home folder), not a decorative stub: it must render the same
+        // checkbox as every other source row.
         check(drive->childCount() == 1,
-              QString("drive row has a placeholder child so an expander is drawn (got %1)")
+              QString("drive group has one source child (got %1)")
                   .arg(drive->childCount()));
 
-        const QString root = drive->data(0, Qt::UserRole).toString();
-        const int expected = DriveManager::topLevelFolders(root).size();
+        check(driveChild != nullptr &&
+                  driveChild->flags().testFlag(Qt::ItemIsUserCheckable),
+              "drive source child IS checkable");
+        check(driveChild != nullptr && driveChild->data(0, Qt::CheckStateRole).isValid(),
+              "drive source child has check-state data so its checkbox renders");
+        check(driveChild != nullptr &&
+                  driveChild->data(0, Qt::UserRole + 1).toInt() == 3,
+              "drive source child is the KindDriveSource row");
+        check(driveChild != nullptr &&
+                  driveChild->text(0) == drive->data(0, Qt::UserRole).toString(),
+              "drive source child shows the drive path");
 
-        // --- the real user path: click the expander arrow ---
-        // NB: visualItemRect() starts at the item TEXT. The branch (expander)
-        // is drawn to the LEFT of it, one indentation to the left, so the
-        // click has to target rowRect.left() - 10 rather than rowRect.left().
-        tree->resize(640, 520);
-        tree->show();
+        // Whole-drive sources default to OFF, exactly like a checked-off box.
+        check(drive->checkState(0) == Qt::Unchecked &&
+                  driveChild != nullptr && driveChild->checkState(0) == Qt::Unchecked,
+              "drive group and its source child start unchecked");
+
+        // Expanding must NOT list extra children.
+        tree->expandItem(drive);
         QCoreApplication::processEvents();
-        tree->scrollToItem(drive);
-        QCoreApplication::processEvents();
+        check(drive->childCount() == 1,
+              QString("expanding the drive does not list extras (got %1 children)")
+                  .arg(drive->childCount()));
+        check(drive->child(0) == driveChild,
+              "the drive source child survives expansion");
 
-        const QRect rowRect = tree->visualItemRect(drive);
-        out << "  [diag] visualItemRect=" << rowRect.x() << "," << rowRect.y()
-            << " " << rowRect.width() << "x" << rowRect.height()
-            << " -> clicking branch at x=" << (rowRect.left() - 10) << "\n";
-        out.flush();
-
-        QTest::mouseClick(tree->viewport(), Qt::LeftButton, Qt::NoModifier,
-                          QPoint(rowRect.left() - 10, rowRect.center().y()));
-        QCoreApplication::processEvents();
-
-        out << "  [diag] after branch click: expanded=" << drive->isExpanded()
-            << " children=" << drive->childCount() << "\n";
-        out.flush();
-
-        check(drive->isExpanded(),
-              "clicking the expander indicator expands the drive row");
-        check(drive->childCount() == expected,
-              QString("branch click lazy-loads every top-level folder (%1 vs %2)")
-                  .arg(drive->childCount()).arg(expected));
-
-        // Safety net: if a platform ever stops honouring the synthetic click,
-        // expand programmatically so the remaining assertions still run.
-        if (drive->childCount() <= 1) {
-            tree->expandAll();
-            QCoreApplication::processEvents();
-            out << "  [diag] fell back to expandAll\n";
-        }
-
-        check(drive->childCount() == expected,
-              QString("expanding loads every top-level folder (%1 vs %2)")
-                  .arg(drive->childCount()).arg(expected));
-
-        // Placeholder must be gone, real folders present.
-        bool hasPlaceholder = false;
-        bool allCheckable = drive->childCount() > 0;
-        for (int i = 0; i < drive->childCount(); ++i) {
-            QTreeWidgetItem* child = drive->child(i);
-            if (child->text(0) == QStringLiteral("Loading…"))
-                hasPlaceholder = true;
-            if (!child->flags().testFlag(Qt::ItemIsUserCheckable))
-                allCheckable = false;
-        }
-        check(!hasPlaceholder, "placeholder is replaced by real folders");
-        check(allCheckable, "every drive folder is checkable");
-
-        // System folders must not be offered.
-        bool offersSystemFolder = false;
-        for (int i = 0; i < drive->childCount(); ++i) {
-            const QString name = drive->child(i)->text(0);
-            if (name.startsWith(QLatin1Char('$')) ||
-                name.compare(QStringLiteral("System Volume Information"), Qt::CaseInsensitive) == 0)
-                offersSystemFolder = true;
-        }
-        check(!offersSystemFolder, "uncopyable system folders are filtered out");
-
-        // THIS is the reported bug: checking a folder under a drive.
+        // Checking the drive GROUP cascades to its whole-drive source child.
         const int before = checklist.checkedCount();
-        drive->child(0)->setCheckState(0, Qt::Checked);
+        drive->setCheckState(0, Qt::Checked);
+        QCoreApplication::processEvents();
         check(checklist.checkedCount() == before + 1,
-              QString("checking a drive folder works (%1 -> %2)")
+              QString("checking the drive group adds one source (%1 -> %2)")
                   .arg(before).arg(checklist.checkedCount()));
+        check(driveChild != nullptr && driveChild->checkState(0) == Qt::Checked,
+              "the drive source child becomes checked with the group");
 
-        drive->child(1)->setCheckState(0, Qt::Checked);
-        check(checklist.checkedCount() == before + 2, "a second drive folder also checks");
+        const QList<SourceEntry> sources = checklist.checkedSources();
+        bool foundDrive = false;
+        for (const SourceEntry& entry : sources) {
+            if (entry.path == drive->data(0, Qt::UserRole).toString()) {
+                foundDrive = true;
+                check(!entry.name.isEmpty(), "drive source has a non-empty name");
+                check(entry.bytes > 0, QString("drive source reports used bytes (got %1)")
+                                           .arg(entry.bytes));
+            }
+        }
+        check(foundDrive, "checkedSources includes the whole drive as one entry");
+
+        // Toggling ONLY the child must re-derive the group's own box.
+        driveChild->setCheckState(0, Qt::Unchecked);
+        QCoreApplication::processEvents();
+        check(drive->checkState(0) == Qt::Unchecked,
+              "drive group mirrors a fully-unchecked source child");
+        driveChild->setCheckState(0, Qt::Checked);
+        QCoreApplication::processEvents();
+        check(drive->checkState(0) == Qt::Checked,
+              "drive group mirrors a fully-checked source child");
     }
 
-    // --- Verdict: Select all / Clear must reach Home AND drive children ---
+    // --- Verdict: Select all / Clear must reach Home AND the drive rows ---
     QPushButton* selectAllBtn = nullptr;
     QPushButton* clearBtn = nullptr;
     for (QPushButton* b : checklist.findChildren<QPushButton*>()) {
@@ -185,8 +195,8 @@ int main(int argc, char** argv)
         return n;
     };
 
-    // State at this point: Home is partially checked (5/6), two drive
-    // folders are checked. Clear must empty EVERYTHING, not just drives.
+    // State at this point: Home is partially checked (5/6), the drive row is
+    // checked. Clear must empty EVERYTHING, including the drive's own box.
     if (clearBtn) {
         QTest::mouseClick(clearBtn, Qt::LeftButton);
         QCoreApplication::processEvents();
@@ -196,16 +206,20 @@ int main(int argc, char** argv)
         check(home->checkState(0) == Qt::Unchecked, "Clear leaves Home unchecked");
         check(checkedUnder(home) == 0,
               QString("Clear empties Home's folders (got %1)").arg(checkedUnder(home)));
-        if (drive)
-            check(checkedUnder(drive) == 0,
-                  QString("Clear empties drive folders (got %1)").arg(checkedUnder(drive)));
+        if (drive) {
+            check(drive->checkState(0) == Qt::Unchecked,
+                  "Clear unchecks the drive row itself");
+            if (drive->childCount() > 0)
+                check(drive->child(0)->checkState(0) == Qt::Unchecked,
+                      "Clear unchecks the drive source child too");
+        }
         QLabel* summary = checklist.findChild<QLabel*>(QStringLiteral("statusLabel"));
         check(summary != nullptr && summary->text() == QStringLiteral("Nothing selected"),
               "summary reads Nothing selected after Clear");
     }
 
-    // From a fully cleared state, Select all must tick Home's folders
-    // (Home itself shows Checked) and every drive folder.
+    // From a fully cleared state, Select all must tick Home's folders, Home's
+    // own box, and every drive row.
     if (selectAllBtn) {
         QTest::mouseClick(selectAllBtn, Qt::LeftButton);
         QCoreApplication::processEvents();
@@ -217,13 +231,15 @@ int main(int argc, char** argv)
               QString("Select all shows Home checked (got state %1)")
                   .arg(int(home->checkState(0))));
         if (drive) {
-            check(checkedUnder(drive) == drive->childCount(),
-                  QString("Select all ticks every drive folder (got %1/%2)")
-                      .arg(checkedUnder(drive)).arg(drive->childCount()));
-            check(checklist.checkedCount() == home->childCount() + drive->childCount(),
-                  QString("summary counts Home + drive folders (got %1, want %2)")
+            check(drive->checkState(0) == Qt::Checked,
+                  "Select all ticks the drive row itself");
+            check(drive->childCount() > 0 && drive->child(0)->checkState(0) == Qt::Checked,
+                  "Select all ticks the drive source child too");
+            const int driveCount = tree->topLevelItemCount() - 1;
+            check(checklist.checkedCount() == home->childCount() + driveCount,
+                  QString("summary counts Home folders + whole drives (got %1, want %2)")
                       .arg(checklist.checkedCount())
-                      .arg(home->childCount() + drive->childCount()));
+                      .arg(home->childCount() + driveCount));
         }
     }
 

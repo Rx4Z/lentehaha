@@ -6,6 +6,9 @@
 #include <QMutex>
 #include <QWaitCondition>
 #include <QHash>
+#include <QVector>
+#include <QPair>
+#include <QElapsedTimer>
 #include <QUuid>
 #include "TransferTask.h"
 #include "FileCopyEngine.h"
@@ -42,6 +45,7 @@ signals:
     void itemUpdated(const TransferItem& item);
     void itemRemoved(const QUuid& id);
     void itemStarted(const QUuid& id);
+    void itemVerifying(const QUuid& id);
     void itemProgress(const QUuid& id, qint64 bytesTransferred, qint64 totalBytes, double speedBps);
     void itemCompleted(const QUuid& id, bool success, const QString& error);
     void allCompleted();
@@ -52,6 +56,7 @@ private slots:
 private:
     void startNext();
     bool isPaused(const QUuid& id) const;
+    double sampleSpeed(const QUuid& id, qint64 bytes);
 
     mutable QMutex m_mutex;
     QQueue<TransferItem> m_queue;
@@ -61,4 +66,8 @@ private:
     FileCopyEngine m_engine;
     int m_maxConcurrent = 4;
     int m_activeCount = 0;
+
+    QElapsedTimer m_clock;
+    QHash<QUuid, QVector<QPair<qint64, qint64>>> m_speedSamples;
+    QHash<QUuid, double> m_lastSpeed;
 };

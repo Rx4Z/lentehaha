@@ -5,38 +5,14 @@
 #include <QHBoxLayout>
 #include <QHeaderView>
 #include <QFileInfo>
-#include <QTimer>
 #include <QtAlgorithms>
-#include <QStyledItemDelegate>
-#include <QStyleOptionViewItem>
 
 namespace {
 constexpr int kPathRole = Qt::UserRole;
 constexpr int kKindRole = Qt::UserRole + 1;
 constexpr int kBytesRole = Qt::UserRole + 2;
 constexpr int kSizeTextRole = Qt::UserRole + 3;
-
-// A checkable row reserves a check column in front of its text: a 15px
-// QSS indicator (plus its 1px border on each side), a 2px margin-right and
-// Qt's own check-to-text spacing. Rows without a check state (drive roots and
-// the "Loading…" placeholder) get no such column, so their text lands 25px to
-// the left of their checkable neighbours and the tree reads as two different
-// columns. Shift those rows back into the shared column.
-constexpr int kCheckColumnWidth = 25;
-
-class AlignRowsWithoutCheckbox : public QStyledItemDelegate
-{
-public:
-    explicit AlignRowsWithoutCheckbox(QObject* parent = nullptr) : QStyledItemDelegate(parent) {}
-
-protected:
-    void initStyleOption(QStyleOptionViewItem* option, const QModelIndex& index) const override
-    {
-        QStyledItemDelegate::initStyleOption(option, index);
-        if (index.column() == 0 && !(option->features & QStyleOptionViewItem::HasCheckIndicator))
-            option->rect.setLeft(option->rect.left() + kCheckColumnWidth);
-    }
-};
+constexpr int kNameRole = Qt::UserRole + 4;
 
 // Re-entrancy guard: nested scopes must not clobber each other, so use a
 // counter that is always restored by RAII instead of a shared bool.
@@ -69,7 +45,6 @@ SourceChecklist::SourceChecklist(SizeScanner* scanner, QWidget* parent)
     m_tree->setSelectionMode(QAbstractItemView::SingleSelection);
     m_tree->header()->setSectionResizeMode(0, QHeaderView::Stretch);
     m_tree->header()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
-    m_tree->setItemDelegate(new AlignRowsWithoutCheckbox(m_tree));
 
     layout->addWidget(m_tree, 1);
 
@@ -88,7 +63,6 @@ SourceChecklist::SourceChecklist(SizeScanner* scanner, QWidget* parent)
     layout->addLayout(footer);
 
     connect(m_tree, &QTreeWidget::itemChanged, this, &SourceChecklist::onItemChanged);
-    connect(m_tree, &QTreeWidget::itemExpanded, this, &SourceChecklist::onItemExpanded);
     connect(m_selectAllBtn, &QPushButton::clicked, this, &SourceChecklist::onSelectAll);
     connect(m_clearBtn, &QPushButton::clicked, this, &SourceChecklist::onClearAll);
     connect(m_refreshBtn, &QPushButton::clicked, this, [this] { refresh(); });
@@ -149,68 +123,51 @@ QTreeWidgetItem* SourceChecklist::buildFolderItem(const QString& name, const QSt
 QTreeWidgetItem* SourceChecklist::buildDriveGroup(const DriveInfo& drive)
 {
     auto* item = new QTreeWidgetItem(m_tree);
-    item->setText(0, QString("%1  —  %2").arg(drive.letter, drive.label));
+
+    // Name the row the way Windows does: volume label plus letter, e.g.
+    // "Cr0w (E:)". Unlabeled volumes show just the letter ("E:").
+    const QString title = drive.label.isEmpty()
+        ? drive.letter
+        : QStringLiteral("%1 (%2)").arg(drive.label, drive.letter);
+    const QString driveName = drive.label.isEmpty()
+        ? QString(drive.letter).remove(QLatin1Char(':'))
+        : drive.label;
+    item->setText(0, title);
     item->setText(1, DriveManager::formatSize(drive.freeBytes) + QStringLiteral(" free"));
     item->setData(0, kPathRole, drive.path);
     item->setData(0, kKindRole, KindDriveGroup);
+    item->setData(0, kBytesRole, QVariant::fromValue<qint64>(drive.totalBytes - drive.freeBytes));
     item->setForeground(0, Theme::instance().text());
     item->setForeground(1, Theme::instance().textMuted());
     QFont f = item->font(0);
     f.setBold(true);
     item->setFont(0, f);
+    item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+    // ItemIsUserCheckable alone paints nothing: Qt only draws the checkbox
+    // once the CheckStateRole holds an actual value. The group's own box is
+    // a tri-state mirror of its source child, so start both unchecked.
+    item->setCheckState(0, Qt::Unchecked);
 
-    // QTreeWidgetItem is checkable by DEFAULT. A drive row must never be
-    // selectable as a source in its own right, otherwise the whole volume gets
-    // copied instead of just the folders the user ticked. Expand-only.
-    item->setFlags((item->flags() | Qt::ItemIsEnabled) & ~Qt::ItemIsUserCheckable);
-
-    // A QTreeWidgetItem with no children draws NO expander arrow, so the row
-    // looks inert and cannot be clicked open. A placeholder child gives Qt
-    // something to draw an arrow for; it is swapped for real folders on expand.
-    addPlaceholder(item, QStringLiteral("Loading…"));
+    // The whole-drive source is a REAL checkable child row, exactly like a
+    // Home folder — so it renders the standard checkbox (not a decorative
+    // non-checkable stub) and carries the entry name/size used by the
+    // transfer. Checking either box keeps the other in sync.
+    auto* source = new QTreeWidgetItem(item);
+    const QString usedText = DriveManager::formatSize(drive.totalBytes - drive.freeBytes);
+    source->setText(0, drive.path);
+    source->setText(1, usedText);
+    source->setData(0, kPathRole, drive.path);
+    source->setData(0, kKindRole, KindDriveSource);
+    source->setData(0, kBytesRole, QVariant::fromValue<qint64>(drive.totalBytes - drive.freeBytes));
+    source->setData(0, kNameRole, driveName);
+    source->setForeground(0, Theme::instance().textMuted());
+    source->setForeground(1, Theme::instance().textMuted());
+    source->setFlags(source->flags() | Qt::ItemIsUserCheckable);
+    // Without an actual CheckStateRole value Qt draws no checkbox even on a
+    // checkable item, so give the source child a real (unchecked) state.
+    source->setCheckState(0, Qt::Unchecked);
 
     return item;
-}
-
-void SourceChecklist::addPlaceholder(QTreeWidgetItem* parent, const QString& text)
-{
-    auto* placeholder = new QTreeWidgetItem(parent);
-    placeholder->setText(0, text);
-    placeholder->setData(0, kKindRole, KindPlaceholder);
-    placeholder->setFlags(Qt::ItemIsEnabled);
-    placeholder->setForeground(0, Theme::instance().textMuted());
-}
-
-void SourceChecklist::populateDriveChildren(QTreeWidgetItem* driveItem)
-{
-    if (!driveItem)
-        return;
-
-    // Already populated with real folders?
-    if (driveItem->childCount() > 0 &&
-        driveItem->child(0)->data(0, kKindRole).toInt() != KindPlaceholder) {
-        return;
-    }
-
-    const QString root = driveItem->data(0, kPathRole).toString();
-
-    Guard guard(m_guard);
-
-    // Detach and free the placeholder. Safe because callers reach this only
-    // from a queued event (see onItemExpanded), never from inside the view's
-    // own expand handling, where freeing a child is a use-after-free.
-    while (driveItem->childCount() > 0)
-        delete driveItem->takeChild(0);
-
-    const QStringList folders = DriveManager::topLevelFolders(root);
-
-    if (folders.isEmpty()) {
-        addPlaceholder(driveItem, QStringLiteral("No folders found"));
-        return;
-    }
-
-    for (const QString& folder : folders)
-        driveItem->addChild(buildFolderItem(QFileInfo(folder).fileName(), folder));
 }
 
 void SourceChecklist::populateAllDrives()
@@ -285,15 +242,17 @@ void SourceChecklist::refreshAncestors(QTreeWidgetItem* item)
                     ++checked;
             }
 
-            Qt::CheckState state = Qt::Unchecked;
+            // Only re-derive a parent's state when it actually HAS checkable
+            // children. A leaf-checkable row (a whole-drive source or a Home
+            // group with no folders) must keep whatever the user chose.
             if (total > 0) {
+                Qt::CheckState state = Qt::Unchecked;
                 if (checked == total)
                     state = Qt::Checked;
                 else if (checked > 0)
                     state = Qt::PartiallyChecked;
+                item->setCheckState(0, state);
             }
-
-            item->setCheckState(0, state);
         }
         item = item->parent();
     }
@@ -317,30 +276,6 @@ void SourceChecklist::onItemChanged(QTreeWidgetItem* item, int column)
     emit sourcesChanged();
 }
 
-void SourceChecklist::onItemExpanded(QTreeWidgetItem* item)
-{
-    if (!item || item->data(0, kKindRole).toInt() != KindDriveGroup)
-        return;
-
-    // Mutating the tree from inside the itemExpanded handler re-enters the
-    // view while it is still updating itself. Defer to the event loop and
-    // re-resolve the row by drive path so a refresh() in between cannot leave
-    // us holding a dangling pointer.
-    const QString root = item->data(0, kPathRole).toString();
-
-    QTimer::singleShot(0, this, [this, root]() {
-        for (int i = 0; i < m_tree->topLevelItemCount(); ++i) {
-            QTreeWidgetItem* current = m_tree->topLevelItem(i);
-            if (current->data(0, kPathRole).toString() == root &&
-                current->data(0, kKindRole).toInt() == KindDriveGroup) {
-                populateDriveChildren(current);
-                requestSizes();
-                return;
-            }
-        }
-    });
-}
-
 void SourceChecklist::onSizeReady(const QString& path, qint64 bytes)
 {
     QTreeWidgetItemIterator it(m_tree);
@@ -361,14 +296,15 @@ void SourceChecklist::onSelectAll()
 {
     Guard guard(m_guard);
 
-    // Set the CHILDREN of each top-level row, never the row's own box:
-    // writing a parent's check state while the guard is held swallows the
-    // itemChanged cascade, and the refreshAncestors() below would then
-    // recompute the parent straight back from its untouched children.
-    // Drive rows are not checkable at all, so setChildrenChecked() simply
-    // skips them and ticks their folders directly.
+    // Set each top-level row's OWN box when it is checkable (Home and now the
+    // drive rows, which are whole-drive sources) and then its children, then
+    // recompute ancestors. Setting the parent's state under the guard swallows
+    // the itemChanged cascade; refreshAncestors() below re-derives it from the
+    // children, so the two agree.
     for (int i = 0; i < m_tree->topLevelItemCount(); ++i) {
         QTreeWidgetItem* top = m_tree->topLevelItem(i);
+        if (top->flags().testFlag(Qt::ItemIsUserCheckable))
+            top->setCheckState(0, Qt::Checked);
         setChildrenChecked(top, Qt::Checked);
         refreshAncestors(top);
     }
@@ -383,6 +319,8 @@ void SourceChecklist::onClearAll()
 
     for (int i = 0; i < m_tree->topLevelItemCount(); ++i) {
         QTreeWidgetItem* top = m_tree->topLevelItem(i);
+        if (top->flags().testFlag(Qt::ItemIsUserCheckable))
+            top->setCheckState(0, Qt::Unchecked);
         setChildrenChecked(top, Qt::Unchecked);
         refreshAncestors(top);
     }
@@ -398,12 +336,18 @@ QList<SourceEntry> SourceChecklist::checkedSources() const
     QTreeWidgetItemIterator it(m_tree);
     while (*it) {
         QTreeWidgetItem* item = *it;
-        if (item->data(0, kKindRole).toInt() == KindFolder &&
-            item->checkState(0) == Qt::Checked) {
+        if (item->checkState(0) != Qt::Checked)
+            { ++it; continue; }
+
+        const int kind = item->data(0, kKindRole).toInt();
+        if (kind == KindFolder || kind == KindDriveSource) {
             SourceEntry entry;
             entry.path = item->data(0, kPathRole).toString();
-            entry.name = item->text(0);
             entry.bytes = item->data(0, kBytesRole).toLongLong();
+            if (kind == KindDriveSource)
+                entry.name = item->data(0, kNameRole).toString();
+            else
+                entry.name = item->text(0);
             entries.append(entry);
         }
         ++it;

@@ -417,6 +417,10 @@
 	"MOC_RELAXED_MODE" : false,
 	"MOC_SKIP" : 
 	[
+		"C:/Users/epong/Desktop/FluxTransfer/build/FluxTransferCoreTests_autogen/mocs_compilation_Debug.cpp",
+		"C:/Users/epong/Desktop/FluxTransfer/build/FluxTransferCoreTests_autogen/mocs_compilation_MinSizeRel.cpp",
+		"C:/Users/epong/Desktop/FluxTransfer/build/FluxTransferCoreTests_autogen/mocs_compilation_RelWithDebInfo.cpp",
+		"C:/Users/epong/Desktop/FluxTransfer/build/FluxTransferCoreTests_autogen/mocs_compilation_Release.cpp",
 		"C:/Users/epong/Desktop/FluxTransfer/build/FluxTransferTests_autogen/mocs_compilation_Debug.cpp",
 		"C:/Users/epong/Desktop/FluxTransfer/build/FluxTransferTests_autogen/mocs_compilation_MinSizeRel.cpp",
 		"C:/Users/epong/Desktop/FluxTransfer/build/FluxTransferTests_autogen/mocs_compilation_RelWithDebInfo.cpp",
@@ -474,6 +478,10 @@
 	"UIC_SEARCH_PATHS" : [],
 	"UIC_SKIP" : 
 	[
+		"C:/Users/epong/Desktop/FluxTransfer/build/FluxTransferCoreTests_autogen/mocs_compilation_Debug.cpp",
+		"C:/Users/epong/Desktop/FluxTransfer/build/FluxTransferCoreTests_autogen/mocs_compilation_MinSizeRel.cpp",
+		"C:/Users/epong/Desktop/FluxTransfer/build/FluxTransferCoreTests_autogen/mocs_compilation_RelWithDebInfo.cpp",
+		"C:/Users/epong/Desktop/FluxTransfer/build/FluxTransferCoreTests_autogen/mocs_compilation_Release.cpp",
 		"C:/Users/epong/Desktop/FluxTransfer/build/FluxTransferTests_autogen/mocs_compilation_Debug.cpp",
 		"C:/Users/epong/Desktop/FluxTransfer/build/FluxTransferTests_autogen/mocs_compilation_MinSizeRel.cpp",
 		"C:/Users/epong/Desktop/FluxTransfer/build/FluxTransferTests_autogen/mocs_compilation_RelWithDebInfo.cpp",

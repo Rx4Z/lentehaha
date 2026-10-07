@@ -39,4 +39,23 @@ inline bool isSubPath(const QString& parent, const QString& child)
     return child.startsWith(parent + "/") || child.startsWith(parent + "\\");
 }
 
+inline QString normalizedPath(QString path)
+{
+    path.replace(QLatin1Char('\\'), QLatin1Char('/'));
+    return cleanPath(path.toLower());
+}
+
+// True when two paths name the same location, or one is an ancestor of the
+// other ("E:/" vs "E:/CODE"). Windows paths compare case-insensitively and
+// both separators are valid. Copying across overlapping paths either
+// truncates the source in place (dest == source file) or recurses into the
+// copy while it is being created (dest inside source), so both directions
+// must be refused up front.
+inline bool pathsOverlap(const QString& a, const QString& b)
+{
+    const QString x = normalizedPath(a);
+    const QString y = normalizedPath(b);
+    return x == y || isSubPath(x, y) || isSubPath(y, x);
+}
+
 }

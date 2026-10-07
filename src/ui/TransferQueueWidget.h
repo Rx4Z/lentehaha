@@ -42,4 +42,6 @@ private:
 
     void updateSummary();
     QString statusText(TransferStatus status) const;
+    QString verifyText(VerifyState state) const;
+    QColor verifyColor(VerifyState state) const;
 };

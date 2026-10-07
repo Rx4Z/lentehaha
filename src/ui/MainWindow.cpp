@@ -241,6 +241,21 @@ bool MainWindow::validateSelection(QString& reason) const
         return false;
     }
 
+    // A destination that equals, contains, or sits inside a source would
+    // make the copy overwrite its own source files (the 2026-10-06 E: wipe
+    // was exactly dest == source). Refuse the whole batch up front.
+    const QString dest = m_destination->destination();
+    for (const SourceEntry& source : sources) {
+        if (Utils::pathsOverlap(dest, source.path)) {
+            reason = QStringLiteral(
+                         "The destination overlaps a source location, so the "
+                         "copy would overwrite its own source files.\n\n"
+                         "Source: %1\nDestination: %2")
+                         .arg(source.path, dest);
+            return false;
+        }
+    }
+
     const qint64 needed = m_checklist->checkedBytes();
     const qint64 free = m_destination->freeBytes();
 

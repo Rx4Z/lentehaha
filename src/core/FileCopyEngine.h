@@ -20,6 +20,7 @@ enum class CopyResult {
     ErrorDestNotFound,
     ErrorPermissionDenied,
     ErrorDiskFull,
+    ErrorOverlappingPaths,
     ErrorUnknown
 };
 
@@ -61,5 +62,5 @@ private:
                                      qint64 totalBytes);
 
     std::atomic<bool> m_cancelled{false};
-    static constexpr qint64 BUFFER_SIZE = 1024 * 1024;
+    static constexpr qint64 BUFFER_SIZE = 4 * 1024 * 1024;
 };

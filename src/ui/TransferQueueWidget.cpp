@@ -28,8 +28,8 @@ TransferQueueWidget::TransferQueueWidget(QWidget* parent) : QWidget(parent)
     headerLayout->addWidget(m_clearCompletedBtn);
     headerLayout->addWidget(m_cancelAllBtn);
 
-    m_table = new QTableWidget(0, 6, this);
-    m_table->setHorizontalHeaderLabels({"Name", "Status", "Progress", "Size", "Speed", "ETA"});
+    m_table = new QTableWidget(0, 7, this);
+    m_table->setHorizontalHeaderLabels({"Name", "Status", "Progress", "Size", "Speed", "Verify", "ETA"});
     m_table->horizontalHeader()->setStretchLastSection(true);
     m_table->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
     m_table->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft | Qt::AlignVCenter);
@@ -58,7 +58,8 @@ void TransferQueueWidget::addItem(const TransferItem& item)
     m_table->setItem(row, 2, new QTableWidgetItem(QString("%1%").arg(item.percent)));
     m_table->setItem(row, 3, new QTableWidgetItem(DriveManager::formatSize(item.totalBytes)));
     m_table->setItem(row, 4, new QTableWidgetItem(item.speedBps > 0 ? Utils::formatSpeed(item.speedBps) : "-"));
-    m_table->setItem(row, 5, new QTableWidgetItem("-"));
+    m_table->setItem(row, 5, new QTableWidgetItem(verifyText(item.verifyState)));
+    m_table->setItem(row, 6, new QTableWidgetItem("-"));
 
     m_table->item(row, 0)->setData(Qt::UserRole, item.id.toString());
     updateSummary();
@@ -72,19 +73,22 @@ void TransferQueueWidget::updateItem(const TransferItem& item)
             m_table->item(row, 2)->setText(QString("%1%").arg(item.percent));
             m_table->item(row, 3)->setText(DriveManager::formatSize(item.totalBytes));
             m_table->item(row, 4)->setText(item.speedBps > 0 ? Utils::formatSpeed(item.speedBps) : "-");
+            m_table->item(row, 5)->setText(verifyText(item.verifyState));
 
             if (item.status == TransferStatus::InProgress && item.speedBps > 0 && item.totalBytes > item.bytesTransferred) {
                 double remaining = (item.totalBytes - item.bytesTransferred) / item.speedBps;
-                m_table->item(row, 5)->setText(Utils::formatEta(remaining));
+                m_table->item(row, 6)->setText(Utils::formatEta(remaining));
             } else {
-                m_table->item(row, 5)->setText("-");
+                m_table->item(row, 6)->setText("-");
             }
+            m_table->item(row, 5)->setForeground(verifyColor(item.verifyState));
 
             if (item.status == TransferStatus::Completed) {
                 m_table->item(row, 1)->setForeground(Theme::instance().success());
             } else if (item.status == TransferStatus::Failed) {
                 m_table->item(row, 1)->setForeground(Theme::instance().error());
-            } else if (item.status == TransferStatus::InProgress) {
+            } else if (item.status == TransferStatus::InProgress ||
+                       item.status == TransferStatus::Verifying) {
                 m_table->item(row, 1)->setForeground(Theme::instance().warning());
             }
             break;
@@ -126,7 +130,7 @@ void TransferQueueWidget::updateSummary()
         QString status = m_table->item(row, 1)->text();
         if (status == "Completed") completed++;
         else if (status == "Failed") failed++;
-        else if (status == "In Progress") inProgress++;
+        else if (status == "In Progress" || status == "Verifying") inProgress++;
     }
 
     m_summaryLabel->setText(QString("%1 items • %2 active • %3 completed • %4 failed")
@@ -142,12 +146,35 @@ QString TransferQueueWidget::statusText(TransferStatus status) const
     switch (status) {
         case TransferStatus::Pending: return "Pending";
         case TransferStatus::InProgress: return "In Progress";
+        case TransferStatus::Verifying: return "Verifying";
         case TransferStatus::Completed: return "Completed";
         case TransferStatus::Failed: return "Failed";
         case TransferStatus::Cancelled: return "Cancelled";
         case TransferStatus::Paused: return "Paused";
     }
     return "Unknown";
+}
+
+QString TransferQueueWidget::verifyText(VerifyState state) const
+{
+    switch (state) {
+        case VerifyState::Verifying: return "Verifying…";
+        case VerifyState::Passed: return "Verified";
+        case VerifyState::Failed: return "Mismatch";
+        case VerifyState::NotRequested: return "-";
+    }
+    return "Unknown";
+}
+
+QColor TransferQueueWidget::verifyColor(VerifyState state) const
+{
+    switch (state) {
+        case VerifyState::Verifying: return Theme::instance().warning();
+        case VerifyState::Passed: return Theme::instance().success();
+        case VerifyState::Failed: return Theme::instance().error();
+        case VerifyState::NotRequested: return Theme::instance().text();
+    }
+    return Theme::instance().text();
 }
 
 void TransferQueueWidget::onCancelAll()

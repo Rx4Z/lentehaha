@@ -59,10 +59,22 @@ QList<DriveInfo> DriveManager::enumerateDrives(bool includeSystemDrive)
 
         DriveInfo info;
         info.path = QDir::fromNativeSeparators(root);
-        info.letter = storage.displayName();
-        while (info.letter.size() > 1 && info.letter.endsWith(QLatin1Char('/')))
-            info.letter.chop(1);
-        info.label = info.kindLabel();
+
+        // QStorageInfo::displayName() returns the VOLUME LABEL when one
+        // exists ("Cr0w") and the root path when it does not ("E:/"), so it
+        // can never be used as the letter. Parse the real letter from the
+        // root path and keep the label separate.
+        if (info.path.size() >= 2 && info.path.at(1) == QLatin1Char(':'))
+            info.letter = info.path.left(2);
+        else
+            info.letter = storage.displayName();
+
+        const QString shownName = storage.displayName();
+        info.label = (shownName.contains(QLatin1Char('/')) ||
+                      shownName.contains(QLatin1Char('\\')) ||
+                      shownName.contains(QLatin1Char(':')))
+                         ? QString()
+                         : shownName;
 
         if (!systemLetter.isEmpty() &&
             info.letter.compare(systemLetter, Qt::CaseInsensitive) == 0) {

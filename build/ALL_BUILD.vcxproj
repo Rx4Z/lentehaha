@@ -178,6 +178,10 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <Project>{5BA5EFD9-6472-3331-812D-9418C1FEBE7C}</Project>
       <Name>FluxTransfer</Name>
     </ProjectReference>
+    <ProjectReference Include="C:\Users\epong\Desktop\FluxTransfer\build\FluxTransferCoreTests.vcxproj">
+      <Project>{DCCA9D8D-BDDA-3241-B8C5-9052221EFE1C}</Project>
+      <Name>FluxTransferCoreTests</Name>
+    </ProjectReference>
     <ProjectReference Include="C:\Users\epong\Desktop\FluxTransfer\build\FluxTransferTests.vcxproj">
       <Project>{4B7313EA-7BDE-3574-B5C5-895E8403DDE2}</Project>
       <Name>FluxTransferTests</Name>

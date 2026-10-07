@@ -39,19 +39,16 @@ signals:
 
 private slots:
     void onItemChanged(QTreeWidgetItem* item, int column);
-    void onItemExpanded(QTreeWidgetItem* item);
     void onSizeReady(const QString& path, qint64 bytes);
     void onSelectAll();
     void onClearAll();
 
 private:
-    enum Kind { KindFolder, KindHomeGroup, KindDriveGroup, KindPlaceholder };
+    enum Kind { KindFolder, KindHomeGroup, KindDriveGroup, KindDriveSource };
 
     QTreeWidgetItem* buildHomeGroup();
     QTreeWidgetItem* buildFolderItem(const QString& name, const QString& path);
     QTreeWidgetItem* buildDriveGroup(const DriveInfo& drive);
-    void addPlaceholder(QTreeWidgetItem* parent, const QString& text);
-    void populateDriveChildren(QTreeWidgetItem* driveItem);
     void populateAllDrives();
     void setChildrenChecked(QTreeWidgetItem* parent, Qt::CheckState state);
     void refreshAncestors(QTreeWidgetItem* item);

@@ -10,12 +10,20 @@ enum class TransferStatus {
     Completed,
     Failed,
     Cancelled,
-    Paused
+    Paused,
+    Verifying
 };
 
 enum class TransferMode {
     Copy,
     Move
+};
+
+enum class VerifyState {
+    NotRequested,
+    Verifying,
+    Passed,
+    Failed
 };
 
 struct TransferItem
@@ -31,6 +39,7 @@ struct TransferItem
     TransferStatus status = TransferStatus::Pending;
     TransferMode mode = TransferMode::Copy;
     bool verify = false;
+    VerifyState verifyState = VerifyState::NotRequested;
     QString errorMessage;
 
     TransferItem() = default;
@@ -43,3 +52,4 @@ struct TransferItem
 Q_DECLARE_METATYPE(TransferItem)
 Q_DECLARE_METATYPE(TransferStatus)
 Q_DECLARE_METATYPE(TransferMode)
+Q_DECLARE_METATYPE(VerifyState)

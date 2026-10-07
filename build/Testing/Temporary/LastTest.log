@@ -1,10 +1,10 @@
-Start testing: Oct 06 23:01 China Standard Time
+Start testing: Oct 07 23:51 China Standard Time
 ----------------------------------------------------------
-1/3 Testing: copy_verify
-1/3 Test: copy_verify
-Command: "C:/Users/epong/Desktop/FluxTransfer/build/Release/FluxTransferTests.exe"
+1/4 Testing: copy_verify
+1/4 Test: copy_verify
+Command: "C:/Users/epong/Desktop/FluxTransfer/build/Debug/FluxTransferTests.exe"
 Directory: C:/Users/epong/Desktop/FluxTransfer/build
-"copy_verify" start time: Oct 06 23:01 China Standard Time
+"copy_verify" start time: Oct 07 23:51 China Standard Time
 Output:
 ----------------------------------------------------------
   ok:   copyDirectory returns Success
@@ -14,6 +14,10 @@ Output:
   ok:   reported bytes are monotonic
   ok:   final percent reaches 100
   ok:   totalBytes matches source bytes (3150865 vs 3150865)
+  ok:   12 MB file copies successfully
+  ok:   12 MB file emits exactly 3 updates (got 3)
+  ok:   no update advances by more than one buffer (4 MB)
+  ok:   final update reports the full size (12582912/12582912)
   ok:   multi-chunk file verifies
   ok:   single-buffer file verifies
   ok:   empty file verifies
@@ -29,28 +33,84 @@ Output:
   ok:   hidden file no longer breaks verification
   ok:   size traversal also counts hidden files (858 vs 858)
   ok:   missing source directory reports ErrorSourceNotFound
+  ok:   identical roots overlap
+  ok:   drive root overlaps a folder inside it
+  ok:   folder overlaps its drive root (the E: incident shape)
+  ok:   destination inside the source overlaps
+  ok:   source inside the destination overlaps
+  ok:   comparison ignores case and separators
+  ok:   a sibling sharing a name prefix does NOT overlap
+  ok:   the same folder name on another drive does NOT overlap
+  ok:   unrelated paths do NOT overlap
+  ok:   copyFile(source == dest) refuses with ErrorOverlappingPaths
+  ok:   the refused copy left the source file byte-for-byte intact
+  ok:   copyDirectory(dest == source) refuses with ErrorOverlappingPaths
+  ok:   copyDirectory(dest inside source) refuses with ErrorOverlappingPaths
+  ok:   the refused directory copy created nothing
 === FileCopyEngine copy/verify tests ===
 -- copyDirectory --
 -- size accounting --
+-- chunk granularity (12 MB / 4 MB buffer) --
 -- verifyFile --
 -- verifyDirectory --
 -- hidden/system file regression --
 -- error paths --
-=== 22/22 checks passed ===
+-- source == destination guard --
+=== 40/40 checks passed ===
+RESULT: PASS
+<end of output>
+Test time =   0.82 sec
+----------------------------------------------------------
+Test Passed.
+"copy_verify" end time: Oct 07 23:51 China Standard Time
+"copy_verify" time elapsed: 00:00:00
+----------------------------------------------------------
+
+2/4 Testing: transfer_progress
+2/4 Test: transfer_progress
+Command: "C:/Users/epong/Desktop/FluxTransfer/build/Debug/FluxTransferCoreTests.exe"
+Directory: C:/Users/epong/Desktop/FluxTransfer/build
+"transfer_progress" start time: Oct 07 23:51 China Standard Time
+Output:
+----------------------------------------------------------
+=== TransferManager progress tests ===
+  ok:   big file produces progress updates (got 1)
+  ok:   big file bytes are monotonic
+  ok:   big file bytes never exceed reported total
+  ok:   big file update count is throttled (1 <= 5)
+  ok:   big file final update reports all bytes (41943040/41943040)
+  ok:   big file ends at 100%
+  ok:   big file completes
+  ok:   itemUpdated percent equals bytes/total on every snapshot
+  ok:   empty file completes
+  ok:   empty file reaches 100%
+  ok:   small directory verifies and completes
+  ok:   directory contents landed at the destination
+  ok:   verify-enabled transfer reports a Verifying status phase
+  ok:   Verifying phase is reported after the copy reached 100%
+  ok:   verify column exposes a Verifying state while the byte-check runs
+  ok:   byte-compare outcome is Passed for a matching tree
+  ok:   transfer without verify keeps the verify column unset
+  ok:   missing source reports Failed
+-- big file --
+-- empty file --
+-- small dir + verify --
+-- missing source --
+=== 18/18 checks passed ===
 RESULT: PASS
 <end of output>
 Test time =   0.10 sec
 ----------------------------------------------------------
 Test Passed.
-"copy_verify" end time: Oct 06 23:01 China Standard Time
-"copy_verify" time elapsed: 00:00:00
+"transfer_progress" end time: Oct 07 23:51 China Standard Time
+"transfer_progress" time elapsed: 00:00:00
 ----------------------------------------------------------
 
-2/3 Testing: source_checklist
-2/3 Test: source_checklist
-Command: "C:/Users/epong/Desktop/FluxTransfer/build/Release/FluxTransferUiTests.exe"
+3/4 Testing: source_checklist
+3/4 Test: source_checklist
+Command: "C:/Users/epong/Desktop/FluxTransfer/build/Debug/FluxTransferUiTests.exe"
 Directory: C:/Users/epong/Desktop/FluxTransfer/build
-"source_checklist" start time: Oct 06 23:01 China Standard Time
+"source_checklist" start time: Oct 07 23:51 China Standard Time
 Output:
 ----------------------------------------------------------
 === SourceChecklist tests ===
@@ -64,43 +124,52 @@ Output:
   ok:   checkedSources drops to 5 (got 5)
   [diag] system drive excluded: C:, non-system drives: 1
   ok:   drive row is labelled
-  ok:   drive row itself is NOT checkable (expand-only)
-  ok:   drive row has a placeholder child so an expander is drawn (got 1)
-  [diag] visualItemRect=20,98 618x14 -> clicking branch at x=10
-  [diag] after branch click: expanded=1 children=3
-  ok:   clicking the expander indicator expands the drive row
-  ok:   branch click lazy-loads every top-level folder (3 vs 3)
-  ok:   expanding loads every top-level folder (3 vs 3)
-  ok:   placeholder is replaced by real folders
-  ok:   every drive folder is checkable
-  ok:   uncopyable system folders are filtered out
-  ok:   checking a drive folder works (5 -> 6)
-  ok:   a second drive folder also checks
+  ok:   drive row IS checkable (whole-drive source)
+  ok:   drive row has check-state data so its checkbox renders
+  ok:   drive title 'Cr0w (E:)' contains the drive letter 'E:'
+  ok:   drive source name 'Cr0w' is the label/letter, not the media kind
+  ok:   drive group has one source child (got 1)
+  ok:   drive source child IS checkable
+  ok:   drive source child has check-state data so its checkbox renders
+  ok:   drive source child is the KindDriveSource row
+  ok:   drive source child shows the drive path
+  ok:   drive group and its source child start unchecked
+  ok:   expanding the drive does not list extras (got 1 children)
+  ok:   the drive source child survives expansion
+  ok:   checking the drive group adds one source (5 -> 6)
+  ok:   the drive source child becomes checked with the group
+  ok:   drive source has a non-empty name
+  ok:   drive source reports used bytes (got 89826332672)
+  ok:   checkedSources includes the whole drive as one entry
+  ok:   drive group mirrors a fully-unchecked source child
+  ok:   drive group mirrors a fully-checked source child
   ok:   Select all and Clear buttons are findable
   ok:   Clear empties every checkbox (got 0)
   ok:   Clear leaves Home unchecked
   ok:   Clear empties Home's folders (got 0)
-  ok:   Clear empties drive folders (got 0)
+  ok:   Clear unchecks the drive row itself
+  ok:   Clear unchecks the drive source child too
   ok:   summary reads Nothing selected after Clear
   ok:   Select all ticks all Home folders (got 6/6)
   ok:   Select all shows Home checked (got state 2)
-  ok:   Select all ticks every drive folder (got 3/3)
-  ok:   summary counts Home + drive folders (got 9, want 9)
-=== 29/29 checks passed ===
+  ok:   Select all ticks the drive row itself
+  ok:   Select all ticks the drive source child too
+  ok:   summary counts Home folders + whole drives (got 7, want 7)
+=== 40/40 checks passed ===
 RESULT: PASS
 <end of output>
-Test time =   0.04 sec
+Test time =   0.05 sec
 ----------------------------------------------------------
 Test Passed.
-"source_checklist" end time: Oct 06 23:01 China Standard Time
+"source_checklist" end time: Oct 07 23:51 China Standard Time
 "source_checklist" time elapsed: 00:00:00
 ----------------------------------------------------------
 
-3/3 Testing: visual_alignment
-3/3 Test: visual_alignment
-Command: "C:/Users/epong/Desktop/FluxTransfer/build/Release/FluxTransferVisualTests.exe"
+4/4 Testing: visual_alignment
+4/4 Test: visual_alignment
+Command: "C:/Users/epong/Desktop/FluxTransfer/build/Debug/FluxTransferVisualTests.exe"
 Directory: C:/Users/epong/Desktop/FluxTransfer/build
-"visual_alignment" start time: Oct 06 23:01 China Standard Time
+"visual_alignment" start time: Oct 07 23:51 China Standard Time
 Output:
 ----------------------------------------------------------
 === Visual alignment tests ===
@@ -120,6 +189,8 @@ Output:
   ok:   Speed: header starts on the cell's column (5px vs 5px)
   ok:   ETA: header and cell text rendered
   ok:   ETA: header starts on the cell's column (5px vs 5px)
+  ok:   : header and cell text rendered
+  ok:   : header starts on the cell's column (5px vs 5px)
 -- mode selector: Copy vs Move indicator --
   ok:   Copy starts checked, Move starts unchecked
   ok:   both radios render an indicator
@@ -130,9 +201,12 @@ Output:
 -- source tree: text column and indicator --
   ok:   source tree is present
   ok:   Home group exists
-  ok:   a non-checkable drive group exists
+  ok:   a drive group exists
+  ok:   drive row is checkable and holds check state (checkbox renders)
+  ok:   drive group renders its source child
+  ok:   drive source child is checkable and holds check state (checkbox renders)
   ok:   level-0 rows rendered their text
-  ok:   checkbox and checkbox-less rows share one text column (55px vs 55px)
+  ok:   level-0 rows share one text column (55px vs 55px)
   ok:   level-1 rows share one text column (75px vs 75px)
   ok:   rows have one uniform height
   ok:   tree header labels are left aligned
@@ -143,13 +217,13 @@ Output:
   ok:   checked verify checkbox shows its state (312 primary pixels)
   ok:   unchecked verify checkbox shows no fill
 
-34 checks, 0 failures
+39 checks, 0 failures
 <end of output>
-Test time =   0.08 sec
+Test time =   0.31 sec
 ----------------------------------------------------------
 Test Passed.
-"visual_alignment" end time: Oct 06 23:01 China Standard Time
+"visual_alignment" end time: Oct 07 23:51 China Standard Time
 "visual_alignment" time elapsed: 00:00:00
 ----------------------------------------------------------
 
-End testing: Oct 06 23:01 China Standard Time
+End testing: Oct 07 23:51 China Standard Time

@@ -1,0 +1,28 @@
+^C:\USERS\EPONG\DESKTOP\FLUXTRANSFER\BUILD\CMAKEFILES\6418C03FE1B9DE643E4A602A8FBFF555\TIMESTAMP.RULE
+setlocal
+cd C:\Users\epong\Desktop\FluxTransfer\build
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E cmake_autogen C:/Users/epong/Desktop/FluxTransfer/build/CMakeFiles/FluxTransferCoreTests_autogen.dir/AutogenInfo.json Release
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch C:/Users/epong/Desktop/FluxTransfer/build/FluxTransferCoreTests_autogen/timestamp
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E cmake_transform_depfile "Visual Studio 17 2022" MSBuildAdditionalInputs C:/Users/epong/Desktop/FluxTransfer C:/Users/epong/Desktop/FluxTransfer C:/Users/epong/Desktop/FluxTransfer/build C:/Users/epong/Desktop/FluxTransfer/build C:/Users/epong/Desktop/FluxTransfer/build/FluxTransferCoreTests_autogen/deps C:/Users/epong/Desktop/FluxTransfer/build/CMakeFiles/d/06972b16db68e1f66540a16cd22f59f4b362b1b0af8f63676b8ad2a0bbd6149a.AdditionalInputs
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\EPONG\DESKTOP\FLUXTRANSFER\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/epong/Desktop/FluxTransfer -BC:/Users/epong/Desktop/FluxTransfer/build --check-stamp-file C:/Users/epong/Desktop/FluxTransfer/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

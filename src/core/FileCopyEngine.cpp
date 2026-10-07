@@ -1,4 +1,5 @@
 #include "FileCopyEngine.h"
+#include "../common/Utils.h"
 #include <QDir>
 #include <QFileInfo>
 #include <QElapsedTimer>
@@ -55,6 +56,12 @@ CopyResult FileCopyEngine::copyFileInternal(const QString& source, const QString
 {
     QFileInfo srcInfo(source);
     if (!srcInfo.exists()) return CopyResult::ErrorSourceNotFound;
+
+    // Refuse before touching anything: opening dest with WriteOnly|Truncate
+    // on the same path as the source zeroes the source in place (this is
+    // what wiped files on E:). Overlapping paths are never valid here.
+    if (Utils::pathsOverlap(source, dest))
+        return CopyResult::ErrorOverlappingPaths;
 
     totalBytes = srcInfo.size();
 
@@ -134,6 +141,12 @@ CopyResult FileCopyEngine::copyDirectoryInternal(const QString& sourceDir, const
 {
     QDir srcDir(sourceDir);
     if (!srcDir.exists()) return CopyResult::ErrorSourceNotFound;
+
+    // Refuse before mkpath: copying a directory onto itself truncates its
+    // files in place, and a destination inside the source tree would make
+    // the traversal recurse into the copy while it is being created.
+    if (Utils::pathsOverlap(sourceDir, destDir))
+        return CopyResult::ErrorOverlappingPaths;
 
     if (!QDir().mkpath(destDir)) return CopyResult::ErrorPermissionDenied;
 

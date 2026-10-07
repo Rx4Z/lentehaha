@@ -7,6 +7,7 @@
 
 #include "../src/core/FileCopyEngine.h"
 #include "../src/core/DriveManager.h"
+#include "../src/common/Utils.h"
 
 #include <windows.h>
 
@@ -144,6 +145,39 @@ int main(int argc, char** argv)
     check(reported == onDisk,
           QString("totalBytes matches source bytes (%1 vs %2)").arg(reported).arg(onDisk));
 
+    // --- chunk granularity ---
+    // 12 MB over a 4 MB buffer emits exactly three progress updates, each
+    // advancing by at most one buffer, with the final update reporting the
+    // true size. This pins the worker's throttle assumptions (a handful of
+    // updates for a moderately large file, not one per 1 MB block).
+    out << "-- chunk granularity (12 MB / 4 MB buffer) --\n";
+    const QString chunkSrcRoot = root + "/chunksrc";
+    const QString chunkFile = chunkSrcRoot + "/chunk.bin";
+    const QByteArray big = makeData(12 * 1024 * 1024, 91);
+    writeFile(chunkFile, big);
+
+    QList<qint64> deltas;
+    qint64 lastChunk = 0;
+    qint64 chunkTotal = 0;
+    int updates = 0;
+    bool deltaOvershoot = false;
+    FileCopyEngine chunkEngine;
+    const CopyResult chunkResult = chunkEngine.copyFile(
+        chunkFile, root + "/chunkdst.bin", [&](const CopyProgress& p) {
+            ++updates;
+            const qint64 step = p.bytesTransferred - lastChunk;
+            if (step > 4 * 1024 * 1024)
+                deltaOvershoot = true;
+            deltas.append(step);
+            lastChunk = p.bytesTransferred;
+            chunkTotal = p.totalBytes;
+        });
+    check(chunkResult == CopyResult::Success, "12 MB file copies successfully");
+    check(updates == 3, QString("12 MB file emits exactly 3 updates (got %1)").arg(updates));
+    check(!deltaOvershoot, "no update advances by more than one buffer (4 MB)");
+    check(lastChunk == chunkTotal && chunkTotal == big.size(),
+          QString("final update reports the full size (%1/%2)").arg(lastChunk).arg(big.size()));
+
     // --- verifyFile happy paths ---
     out << "-- verifyFile --\n";
     check(engine.verifyFile(src + "/big.bin", dst + "/big.bin"), "multi-chunk file verifies");
@@ -230,6 +264,62 @@ int main(int argc, char** argv)
     out << "-- error paths --\n";
     check(engine.copyDirectory(root + "/nope", root + "/dstX") == CopyResult::ErrorSourceNotFound,
           "missing source directory reports ErrorSourceNotFound");
+
+    // --- source == destination guard ---
+    // On 2026-10-06 a destination that resolved back onto the source path
+    // let copyFileInternal open the source with WriteOnly|Truncate and zero
+    // 15k files on E:. These checks pin the overlap predicate and the engine
+    // guards that must never let that happen again.
+    out << "-- source == destination guard --\n";
+
+    check(Utils::pathsOverlap(QStringLiteral("E:/"), QStringLiteral("E:/")),
+          "identical roots overlap");
+    check(Utils::pathsOverlap(QStringLiteral("E:/"), QStringLiteral("E:/CODE")),
+          "drive root overlaps a folder inside it");
+    check(Utils::pathsOverlap(QStringLiteral("E:/CODE"), QStringLiteral("E:/")),
+          "folder overlaps its drive root (the E: incident shape)");
+    check(Utils::pathsOverlap(QStringLiteral("E:/CODE"), QStringLiteral("E:/CODE/sub")),
+          "destination inside the source overlaps");
+    check(Utils::pathsOverlap(QStringLiteral("E:/CODE/sub"), QStringLiteral("E:/CODE")),
+          "source inside the destination overlaps");
+    check(Utils::pathsOverlap(QStringLiteral("e:\\code"), QStringLiteral("E:/CODE/")),
+          "comparison ignores case and separators");
+    check(!Utils::pathsOverlap(QStringLiteral("E:/CODE"), QStringLiteral("E:/CODEX")),
+          "a sibling sharing a name prefix does NOT overlap");
+    check(!Utils::pathsOverlap(QStringLiteral("E:/CODE"), QStringLiteral("F:/CODE")),
+          "the same folder name on another drive does NOT overlap");
+    check(!Utils::pathsOverlap(QStringLiteral("C:/Users/me"), QStringLiteral("E:/Backup")),
+          "unrelated paths do NOT overlap");
+
+    // Engine: a file copied onto itself must be refused BEFORE the truncate.
+    const QString sameFixture = root + "/guard-src/data.bin";
+    const QByteArray sameData = makeData(4096, 42);
+    writeFile(sameFixture, sameData);
+    FileCopyEngine guardEngine;
+    const CopyResult sameResult = guardEngine.copyFile(sameFixture, sameFixture);
+    check(sameResult == CopyResult::ErrorOverlappingPaths,
+          "copyFile(source == dest) refuses with ErrorOverlappingPaths");
+    QFile guardFile(sameFixture);
+    const bool intact = guardFile.open(QIODevice::ReadOnly) &&
+                        guardFile.readAll() == sameData;
+    check(intact,
+          "the refused copy left the source file byte-for-byte intact");
+
+    // A directory copied onto itself must be refused too (unguarded this
+    // truncates every file in place while reporting Success).
+    const CopyResult sameDirResult = guardEngine.copyDirectory(root + "/guard-src",
+                                                               root + "/guard-src");
+    check(sameDirResult == CopyResult::ErrorOverlappingPaths,
+          "copyDirectory(dest == source) refuses with ErrorOverlappingPaths");
+
+    // A destination inside the source tree must be refused before it is
+    // created (unguarded, the traversal recurses into the copy as it grows).
+    const CopyResult insideResult = guardEngine.copyDirectory(root + "/guard-src",
+                                                              root + "/guard-src/inside");
+    check(insideResult == CopyResult::ErrorOverlappingPaths,
+          "copyDirectory(dest inside source) refuses with ErrorOverlappingPaths");
+    check(!QFileInfo::exists(root + "/guard-src/inside"),
+          "the refused directory copy created nothing");
 
     out << "=== " << (g_checks - g_failures) << "/" << g_checks << " checks passed ===\n";
 

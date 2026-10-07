@@ -113,6 +113,31 @@ if(BUILD_TESTING)
 
     add_test(NAME copy_verify COMMAND FluxTransferTests)
 
+    # Core-level progress rework tests: worker throttle, rolling speed, and
+    # byte/percent invariants. Excludes the UI, so it links Core + Test only.
+    add_executable(FluxTransferCoreTests
+        tests/test_transfer_progress.cpp
+        src/core/TransferManager.cpp
+        src/core/TransferTask.cpp
+        src/core/FileCopyEngine.cpp
+        src/core/DriveManager.cpp
+    )
+
+    target_include_directories(FluxTransferCoreTests PRIVATE src)
+    target_link_libraries(FluxTransferCoreTests PRIVATE Qt6::Core Qt6::Test)
+
+    set_target_properties(FluxTransferCoreTests PROPERTIES
+        WIN32_EXECUTABLE OFF
+        MACOSX_BUNDLE OFF
+    )
+
+    if(MSVC)
+        target_compile_options(FluxTransferCoreTests PRIVATE /W4 /permissive- /utf-8)
+        target_link_options(FluxTransferCoreTests PRIVATE /SUBSYSTEM:CONSOLE)
+    endif()
+
+    add_test(NAME transfer_progress COMMAND FluxTransferCoreTests)
+
     # Widget-level tests for the source checklist (offscreen platform).
     add_executable(FluxTransferUiTests
         tests/test_checklist.cpp
@@ -158,7 +183,7 @@ if(BUILD_TESTING)
     # The test binary is not a deployed app, so it has no Qt DLLs or platform
     # plugins beside it. Point Qt at its own bin/plugins dirs at run time.
     get_filename_component(_QT_ROOT "${Qt6_DIR}/../../.." ABSOLUTE)
-    set_tests_properties(source_checklist visual_alignment PROPERTIES ENVIRONMENT
+    set_tests_properties(copy_verify source_checklist transfer_progress visual_alignment PROPERTIES ENVIRONMENT
         "QT_QPA_PLATFORM=offscreen;QT_PLUGIN_PATH=${_QT_ROOT}/plugins"
         ENVIRONMENT_MODIFICATION "PATH=path_list_prepend:${_QT_ROOT}/bin"
     )

@@ -215,11 +215,13 @@ static void testModeRadios()
 }
 
 // ------------------------------------------------------------ tree rows -----
-static QTreeWidgetItem* findNonCheckableTopLevel(QTreeWidget* tree)
+static QTreeWidgetItem* findDriveGroup(QTreeWidget* tree)
 {
+    // Home is always row 0; every other top-level row is a whole-drive
+    // source (KindDriveGroup == 2 in SourceChecklist's private enum).
     for (int i = 0; i < tree->topLevelItemCount(); ++i) {
         QTreeWidgetItem* item = tree->topLevelItem(i);
-        if (!item->flags().testFlag(Qt::ItemIsUserCheckable))
+        if (item->data(0, Qt::UserRole + 1).toInt() == 2)
             return item;
     }
     return nullptr;
@@ -249,15 +251,32 @@ static void testSourceTree()
         return;
 
     QTreeWidgetItem* home = tree->topLevelItem(0);
-    QTreeWidgetItem* drive = findNonCheckableTopLevel(tree);
+    QTreeWidgetItem* drive = findDriveGroup(tree);
     check(home != nullptr, "Home group exists");
-    check(drive != nullptr, "a non-checkable drive group exists");
+    check(drive != nullptr, "a drive group exists");
     if (!home || !drive)
         return;
 
+    // The drive row must hold actual check state, not just the checkable
+    // flag — without it Qt paints no checkbox at all.
+    check(drive->flags().testFlag(Qt::ItemIsUserCheckable) &&
+              drive->data(0, Qt::CheckStateRole).isValid(),
+          "drive row is checkable and holds check state (checkbox renders)");
+
     tree->expandItem(drive);
-    QCoreApplication::processEvents();   // deferred drive population
+    QCoreApplication::processEvents();   // let the expansion settle
     QCoreApplication::processEvents();
+
+    // Its whole-drive source must be a REAL checkable child row (mirroring
+    // the Home folders), so it paints the same checkbox — a decorative
+    // non-checkable stub renders no indicator at all.
+    check(drive->childCount() > 0, "drive group renders its source child");
+    if (drive->childCount() > 0) {
+        QTreeWidgetItem* sourceChild = drive->child(0);
+        check(sourceChild->flags().testFlag(Qt::ItemIsUserCheckable) &&
+                  sourceChild->data(0, Qt::CheckStateRole).isValid(),
+              "drive source child is checkable and holds check state (checkbox renders)");
+    }
 
     // Distinct colours so text cannot be confused with checkbox chrome.
     home->setForeground(0, QColor(255, 0, 0));
@@ -274,7 +293,7 @@ static void testSourceTree()
     const int driveText = textXOf(img, tree, drive, QColor(0, 255, 0));
     check(homeText > 0 && driveText > 0, "level-0 rows rendered their text");
     check(homeText == driveText,
-          "checkbox and checkbox-less rows share one text column (" +
+          "level-0 rows share one text column (" +
               QString::number(homeText) + "px vs " + QString::number(driveText) + "px)");
 
     if (home->childCount() > 0 && drive->childCount() > 0) {

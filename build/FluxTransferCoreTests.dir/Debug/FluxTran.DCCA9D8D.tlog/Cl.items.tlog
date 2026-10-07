@@ -1,0 +1,6 @@
+C:\Users\epong\Desktop\FluxTransfer\build\FluxTransferCoreTests_autogen\mocs_compilation_Debug.cpp;C:\Users\epong\Desktop\FluxTransfer\build\FluxTransferCoreTests.dir\Debug\mocs_compilation_Debug.obj
+C:\Users\epong\Desktop\FluxTransfer\tests\test_transfer_progress.cpp;C:\Users\epong\Desktop\FluxTransfer\build\FluxTransferCoreTests.dir\Debug\test_transfer_progress.obj
+C:\Users\epong\Desktop\FluxTransfer\src\core\TransferManager.cpp;C:\Users\epong\Desktop\FluxTransfer\build\FluxTransferCoreTests.dir\Debug\TransferManager.obj
+C:\Users\epong\Desktop\FluxTransfer\src\core\TransferTask.cpp;C:\Users\epong\Desktop\FluxTransfer\build\FluxTransferCoreTests.dir\Debug\TransferTask.obj
+C:\Users\epong\Desktop\FluxTransfer\src\core\FileCopyEngine.cpp;C:\Users\epong\Desktop\FluxTransfer\build\FluxTransferCoreTests.dir\Debug\FileCopyEngine.obj
+C:\Users\epong\Desktop\FluxTransfer\src\core\DriveManager.cpp;C:\Users\epong\Desktop\FluxTransfer\build\FluxTransferCoreTests.dir\Debug\DriveManager.obj

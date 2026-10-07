@@ -1,0 +1,13 @@
+C:\Users\epong\Desktop\FluxTransfer\build\FluxTransfer_autogen\mocs_compilation_Debug.cpp;C:\Users\epong\Desktop\FluxTransfer\build\FluxTransfer.dir\Debug\mocs_compilation_Debug.obj
+C:\Users\epong\Desktop\FluxTransfer\src\main.cpp;C:\Users\epong\Desktop\FluxTransfer\build\FluxTransfer.dir\Debug\main.obj
+C:\Users\epong\Desktop\FluxTransfer\src\core\FileCopyEngine.cpp;C:\Users\epong\Desktop\FluxTransfer\build\FluxTransfer.dir\Debug\FileCopyEngine.obj
+C:\Users\epong\Desktop\FluxTransfer\src\core\TransferManager.cpp;C:\Users\epong\Desktop\FluxTransfer\build\FluxTransfer.dir\Debug\TransferManager.obj
+C:\Users\epong\Desktop\FluxTransfer\src\core\TransferTask.cpp;C:\Users\epong\Desktop\FluxTransfer\build\FluxTransfer.dir\Debug\TransferTask.obj
+C:\Users\epong\Desktop\FluxTransfer\src\core\DriveManager.cpp;C:\Users\epong\Desktop\FluxTransfer\build\FluxTransfer.dir\Debug\DriveManager.obj
+C:\Users\epong\Desktop\FluxTransfer\src\core\SizeScanner.cpp;C:\Users\epong\Desktop\FluxTransfer\build\FluxTransfer.dir\Debug\SizeScanner.obj
+C:\Users\epong\Desktop\FluxTransfer\src\ui\MainWindow.cpp;C:\Users\epong\Desktop\FluxTransfer\build\FluxTransfer.dir\Debug\MainWindow.obj
+C:\Users\epong\Desktop\FluxTransfer\src\ui\SourceChecklist.cpp;C:\Users\epong\Desktop\FluxTransfer\build\FluxTransfer.dir\Debug\SourceChecklist.obj
+C:\Users\epong\Desktop\FluxTransfer\src\ui\DestinationPicker.cpp;C:\Users\epong\Desktop\FluxTransfer\build\FluxTransfer.dir\Debug\DestinationPicker.obj
+C:\Users\epong\Desktop\FluxTransfer\src\ui\TransferQueueWidget.cpp;C:\Users\epong\Desktop\FluxTransfer\build\FluxTransfer.dir\Debug\TransferQueueWidget.obj
+C:\Users\epong\Desktop\FluxTransfer\src\ui\ConflictDialog.cpp;C:\Users\epong\Desktop\FluxTransfer\build\FluxTransfer.dir\Debug\ConflictDialog.obj
+C:\Users\epong\Desktop\FluxTransfer\src\common\Theme.cpp;C:\Users\epong\Desktop\FluxTransfer\build\FluxTransfer.dir\Debug\Theme.obj

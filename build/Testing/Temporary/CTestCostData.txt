@@ -1,4 +1,5 @@
-copy_verify 10 0.01035
-source_checklist 9 0.00418088
-visual_alignment 4 0.0188226
+copy_verify 20 0.0409205
+source_checklist 20 0.00273419
+visual_alignment 15 0.0203746
+transfer_progress 12 0.00806373
 ---

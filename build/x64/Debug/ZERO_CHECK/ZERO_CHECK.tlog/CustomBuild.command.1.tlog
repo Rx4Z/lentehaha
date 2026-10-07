@@ -1,0 +1,10 @@
+^C:\USERS\EPONG\DESKTOP\FLUXTRANSFER\BUILD\CMAKEFILES\A2ECA94DE47D7EADBF6E5852317EE618\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/epong/Desktop/FluxTransfer -BC:/Users/epong/Desktop/FluxTransfer/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/epong/Desktop/FluxTransfer/build/FluxTransfer.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

@@ -5,17 +5,20 @@ C:/Users/epong/Desktop/FluxTransfer/src/core/TransferManager.cpp
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/QDeadlineTimer
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/QDebug
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/QDir
+ mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/QElapsedTimer
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/QFile
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/QFileInfo
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/QHash
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/QMetaType
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/QMutex
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/QObject
+ mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/QPair
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/QQueue
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/QString
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/QStringList
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/QThreadPool
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/QUuid
+ mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/QVector
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/QWaitCondition
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/q20memory.h
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/q20type_traits.h
@@ -135,6 +138,7 @@ C:/Users/epong/Desktop/FluxTransfer/src/core/TransferManager.cpp
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/quuid.h
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/qvariant.h
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/qvarlengtharray.h
+ mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/qvector.h
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/qversiontagging.h
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/qwaitcondition.h
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/qxptype_traits.h
@@ -494,16 +498,19 @@ C:/Users/epong/Desktop/FluxTransfer/src/core/DriveManager.h
 C:/Users/epong/Desktop/FluxTransfer/src/core/TransferManager.h
  mmc:Q_OBJECT
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/QDeadlineTimer
+ mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/QElapsedTimer
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/QFile
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/QHash
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/QMetaType
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/QMutex
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/QObject
+ mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/QPair
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/QQueue
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/QString
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/QStringList
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/QThreadPool
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/QUuid
+ mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/QVector
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/QWaitCondition
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/q20type_traits.h
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/qalgorithms.h
@@ -605,6 +612,7 @@ C:/Users/epong/Desktop/FluxTransfer/src/core/TransferManager.h
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/qtypes.h
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/qutf8stringview.h
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/quuid.h
+ mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/qvector.h
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/qversiontagging.h
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/qwaitcondition.h
  mdp:C:/Qt/6.5.3/msvc2019_64/include/QtCore/qxptype_traits.h

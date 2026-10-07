@@ -1,0 +1,24 @@
+^C:\USERS\EPONG\DESKTOP\FLUXTRANSFER\BUILD\CMAKEFILES\A2ECA94DE47D7EADBF6E5852317EE618\DEPLOY.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E make_directory C:/Users/epong/Desktop/FluxTransfer/dist
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E copy_if_different C:/Users/epong/Desktop/FluxTransfer/build/Debug/FluxTransfer.exe C:/Users/epong/Desktop/FluxTransfer/dist
+if %errorlevel% neq 0 goto :cmEnd
+C:\Qt\6.5.3\msvc2019_64\bin\windeployqt6.exe --release --no-translations --no-system-d3d-compiler --no-opengl-sw --dir C:/Users/epong/Desktop/FluxTransfer/dist C:/Users/epong/Desktop/FluxTransfer/dist/FluxTransfer.exe
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\EPONG\DESKTOP\FLUXTRANSFER\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/epong/Desktop/FluxTransfer -BC:/Users/epong/Desktop/FluxTransfer/build --check-stamp-file C:/Users/epong/Desktop/FluxTransfer/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

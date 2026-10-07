@@ -1,11 +1,13 @@
 C:/Users/epong/Desktop/FluxTransfer/build/FluxTransfer_autogen/include_Release/YPKJ5OE7LN/moc_MainWindow.cpp: C:/Users/epong/Desktop/FluxTransfer/src/ui/MainWindow.h \
   C:/Qt/6.5.3/msvc2019_64/include/QtCore/QDeadlineTimer \
+  C:/Qt/6.5.3/msvc2019_64/include/QtCore/QElapsedTimer \
   C:/Qt/6.5.3/msvc2019_64/include/QtCore/QFile \
   C:/Qt/6.5.3/msvc2019_64/include/QtCore/QHash \
   C:/Qt/6.5.3/msvc2019_64/include/QtCore/QList \
   C:/Qt/6.5.3/msvc2019_64/include/QtCore/QMetaType \
   C:/Qt/6.5.3/msvc2019_64/include/QtCore/QMutex \
   C:/Qt/6.5.3/msvc2019_64/include/QtCore/QObject \
+  C:/Qt/6.5.3/msvc2019_64/include/QtCore/QPair \
   C:/Qt/6.5.3/msvc2019_64/include/QtCore/QQueue \
   C:/Qt/6.5.3/msvc2019_64/include/QtCore/QRect \
   C:/Qt/6.5.3/msvc2019_64/include/QtCore/QSet \
@@ -15,6 +17,7 @@ C:/Users/epong/Desktop/FluxTransfer/build/FluxTransfer_autogen/include_Release/Y
   C:/Qt/6.5.3/msvc2019_64/include/QtCore/QStringList \
   C:/Qt/6.5.3/msvc2019_64/include/QtCore/QThreadPool \
   C:/Qt/6.5.3/msvc2019_64/include/QtCore/QUuid \
+  C:/Qt/6.5.3/msvc2019_64/include/QtCore/QVector \
   C:/Qt/6.5.3/msvc2019_64/include/QtCore/QWaitCondition \
   C:/Qt/6.5.3/msvc2019_64/include/QtCore/q20memory.h \
   C:/Qt/6.5.3/msvc2019_64/include/QtCore/q20type_traits.h \
@@ -142,6 +145,7 @@ C:/Users/epong/Desktop/FluxTransfer/build/FluxTransfer_autogen/include_Release/Y
   C:/Qt/6.5.3/msvc2019_64/include/QtCore/quuid.h \
   C:/Qt/6.5.3/msvc2019_64/include/QtCore/qvariant.h \
   C:/Qt/6.5.3/msvc2019_64/include/QtCore/qvarlengtharray.h \
+  C:/Qt/6.5.3/msvc2019_64/include/QtCore/qvector.h \
   C:/Qt/6.5.3/msvc2019_64/include/QtCore/qversiontagging.h \
   C:/Qt/6.5.3/msvc2019_64/include/QtCore/qwaitcondition.h \
   C:/Qt/6.5.3/msvc2019_64/include/QtCore/qxptype_traits.h \
